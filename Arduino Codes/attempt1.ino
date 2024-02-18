@@ -1,4 +1,6 @@
 // This code is an attempt to merge EEG filter with Spike Recorder
+// Not tested yet.
+
 
 #define SAMPLE_RATE 256
 #define BAUD_RATE 115200

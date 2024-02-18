@@ -1,4 +1,6 @@
 // This is the OG BYB Spike recorder code from BYB itself
+// Tested and works as intended
+
 
 //
 // Spike Recorder Arduino code 30. Sep. 2015

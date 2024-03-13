@@ -64,7 +64,7 @@ void loop() {
 // Reference: 
 // https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.butter.html
 // https://courses.ideate.cmu.edu/16-223/f2020/Arduino/FilterDemos/filter_gen.py
-float EEGFilter(float input) {
+2float EEGFilter(float input) {
 	float output = input;
 	{
 		static float z1, z2; // filter section state

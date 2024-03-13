@@ -10,7 +10,7 @@ arduino = serial.Serial('COM7', 230400)
 
 # Open CSV file for writing
 # filename = time.strftime("%Y%m%d-%H%M%S") + ".csv"
-filename = "alpha2.csv"
+filename = "alpha6.csv"
 
 with open(filename, 'w', newline='') as csvfile:
     fieldnames = ['Timestamp', 'Channel1']  # Add more fields for multiple channels

@@ -6,7 +6,11 @@ import csv
 import time
 
 # Specify serial port and baud rate
-arduino = serial.Serial('COM7', 230400)
+BAUD_RATE = 115200 # Alternatively use 230400, i.e. its double
+COM_PORT = 'COM7'
+
+# Connect to arduino
+arduino = serial.Serial(COM_PORT, BAUD_RATE)
 
 # Open CSV file for writing
 # filename = time.strftime("%Y%m%d-%H%M%S") + ".csv"

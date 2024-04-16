@@ -17,6 +17,9 @@ threshold = MAX
 count = 0
 sum = 0
 avg_value = 0
+blink = 0
+
+filler = "A"
 
 # Connect to arduino
 arduino = serial.Serial(COM_PORT, BAUD_RATE)
@@ -34,15 +37,42 @@ def thresholdingFunc():
     print("Exiting")
     return
 
+def thresholdingFuncStatic():
+    global count, threshold
+
+    count = 0
+    threshold = 7333
+    # print("------------------------------------------------------------------------------------------------------------------------------")
+    # print(threshold)
+    # print("------------------------------------------------------------------------------------------------------------------------------")
+    # print("Exiting")
+    return
+
+def thresholdingFuncAverage():
+    global count, sum, avg_value, threshold
+
+    count = 0
+    avg_value = sum/WINDOW_SIZE
+    threshold = avg_value
+    sum = avg_value
+    # print("------------------------------------------------------------------------------------------------------------------------------")
+    # print(threshold)
+    # print("------------------------------------------------------------------------------------------------------------------------------")
+    return
 
 # Open CSV file for writing
 # filename = time.strftime("%Y%m%d-%H%M%S") + ".csv"
-filename = "Datasets/alpha7.csv"
+filename = "Datasets/E1"+filler+".csv"
+txtFile = open("measure"+filler+".csv", "w")
 
 with open(filename, 'w', newline='') as csvfile:
     fieldnames = ['Timestamp', 'Channel1']  # Add more fields for multiple channels
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    writer2 = csv.DictWriter(txtFile, fieldnames=fieldnames)
     writer.writeheader()
+    writer2.writeheader()
+    print("Starting")
+    start_time = time.time()
 
     try:
         while True:
@@ -68,16 +98,22 @@ with open(filename, 'w', newline='') as csvfile:
                         value = int(channel1_data)
                         sum += value
 
+
                         if (flag == False):
                             threshold = MAX
 
                         if (value > threshold):
                             print("Found it! val:", value)
+                            writer2.writerow({'Timestamp': current_time, 'Channel1': channel1_data})
                             flag = False
+                            blink += 1
 
                         if (count == WINDOW_SIZE):
-                            thresholdingFunc()
+                            thresholdingFuncAverage()
                             flag = True
+
+                        if (time.time() - start_time >= 60):
+                            raise KeyboardInterrupt                     
 
 
     except KeyboardInterrupt:
@@ -85,4 +121,6 @@ with open(filename, 'w', newline='') as csvfile:
 
     finally:
         arduino.close()
+        txtFile.close()
         print("Serial connection closed.")
+        print("blink:", blink)

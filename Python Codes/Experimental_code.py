@@ -104,7 +104,7 @@ with open(filename, 'w', newline='') as csvfile:
 
                         if (value > threshold):
                             print("Found it! val:", value)
-                            writer2.writerow({'Timestamp': current_time, 'Channel1': channel1_data})
+                            writer2.writerow({'Timestamp': str(time.time() - start_time), 'Channel1': channel1_data})
                             flag = False
                             blink += 1
 

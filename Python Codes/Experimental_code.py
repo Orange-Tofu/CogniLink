@@ -19,7 +19,7 @@ sum = 0
 avg_value = 0
 blink = 0
 
-filler = "A"
+filler = "D"
 
 # Connect to arduino
 arduino = serial.Serial(COM_PORT, BAUD_RATE)
@@ -104,12 +104,12 @@ with open(filename, 'w', newline='') as csvfile:
 
                         if (value > threshold):
                             print("Found it! val:", value)
-                            writer2.writerow({'Timestamp': current_time, 'Channel1': channel1_data})
+                            writer2.writerow({'Timestamp': str(time.time() - start_time), 'Channel1': channel1_data})
                             flag = False
                             blink += 1
 
                         if (count == WINDOW_SIZE):
-                            thresholdingFuncAverage()
+                            thresholdingFunc()
                             flag = True
 
                         if (time.time() - start_time >= 60):

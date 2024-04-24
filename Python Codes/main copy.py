@@ -11,12 +11,13 @@ keyboard = Controller()
 # Specify serial port and baud rate
 BAUD_RATE = 115200
 COM_PORT = 'COM7'
-WINDOW_SIZE = 400
-THRESHOLD_FACTOR = 0.2185
+WINDOW_SIZE = 10
+THRESHOLD_FACTOR = 0.35
 MAX = 100000
+MIN = -1
 
 flag = True
-threshold = MAX
+threshold = MIN
 count = 0
 sum = 0
 avg_value = 0
@@ -33,7 +34,7 @@ def thresholdingFunc():
     global count, sum, avg_value, threshold
     count = 0
     avg_value = sum/WINDOW_SIZE
-    threshold = avg_value + (avg_value * THRESHOLD_FACTOR)
+    threshold = avg_value - (avg_value * THRESHOLD_FACTOR)
     sum = avg_value
     return
 
@@ -57,7 +58,7 @@ plt.grid(True)
 plt.ion()  # Turn on interactive mode
 
 # Set the maximum number of data points to show
-max_data_points = 1000
+max_data_points = 100
 
 with open(filename, 'w', newline='') as csvfile:
     fieldnames = ['Timestamp', 'Channel1']
@@ -112,9 +113,9 @@ with open(filename, 'w', newline='') as csvfile:
 
 
                         if (flag == False):
-                            threshold = MAX
+                            threshold = MIN
 
-                        if (value > threshold):
+                        if (value < threshold):
                             print("Found it! val:", value)
                             flag = False
                             # blink += 1

@@ -6,12 +6,31 @@ import matplotlib.pyplot as plt
 # Specify serial port and baud rate
 BAUD_RATE = 115200
 COM_PORT = 'COM7'
+WINDOW_SIZE = 400
+THRESHOLD_FACTOR = 0.2185
+MAX = 100000
+
+flag = True
+threshold = MAX
+count = 0
+sum = 0
+avg_value = 0
+blink = 0
+
+def thresholdingFunc():
+    global count, sum, avg_value, threshold
+    count = 0
+    avg_value = sum/WINDOW_SIZE
+    threshold = avg_value + (avg_value * THRESHOLD_FACTOR)
+    sum = avg_value
+    return
+
 
 # Connect to Arduino
 arduino = serial.Serial(COM_PORT, BAUD_RATE)
 
 # Open CSV file for writing
-filename = "alphaQQ.csv"
+filename = "Datasets/mainDB.csv"
 
 # Initialize lists for x and y values
 x_values = []
@@ -24,6 +43,9 @@ plt.xlabel('Time (Minute:Second)')
 plt.ylabel('Channel1')
 plt.grid(True)
 plt.ion()  # Turn on interactive mode
+
+# Set the maximum number of data points to show
+max_data_points = 1000
 
 with open(filename, 'w', newline='') as csvfile:
     fieldnames = ['Timestamp', 'Channel1']
@@ -46,7 +68,8 @@ with open(filename, 'w', newline='') as csvfile:
                         channel1_data = current_sample
 
                         # Get the current time (minute and second)
-                        current_time = time.strftime('%M:%S')
+                        current_time = time.strftime('%M:%S.', time.localtime())
+                        current_time += f'{int(time.time() * 1000) % 1000:03d}'
 
                         # Write to CSV
                         writer.writerow({'Timestamp': current_time, 'Channel1': channel1_data})
@@ -56,10 +79,39 @@ with open(filename, 'w', newline='') as csvfile:
                         x_values.append(current_time)
                         y_values.append(channel1_data)
 
-                        # Plot the values
-                        plt.plot(x_values, y_values, linestyle='-')
-                        plt.draw()  # Force the plot to update immediately
-                        plt.pause(0.1)  # Pause to update the plot
+                        # Limit the number of data points
+                        if len(x_values) > max_data_points:
+                            x_values.pop(0)
+                            y_values.pop(0)
+
+                        # Clear the plot and plot the new data
+                        plt.clf()
+                        plt.title('Plot of Values')
+                        plt.xlabel('Time (Minute:Second)')
+                        plt.ylabel('Channel1')
+                        plt.grid(True)
+                        plt.plot(x_values, y_values, color="blue", linestyle='-')
+                        plt.draw()
+                        plt.pause(0.001)
+
+                        count += 1
+                        value = int(channel1_data)
+                        sum += value
+
+
+                        if (flag == False):
+                            threshold = MAX
+
+                        if (value > threshold):
+                            print("Found it! val:", value)
+                            flag = False
+                            blink += 1
+
+                        if (count == WINDOW_SIZE):
+                            thresholdingFunc()
+                            flag = True
+
+
 
     except KeyboardInterrupt:
         print("Exiting...")
